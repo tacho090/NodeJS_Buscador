@@ -1,30 +1,26 @@
 const http = require('http');
+const bodyParser = require('body-parser');
 const express = require('express');
-const app = express();
 const path = require('path');
-const fs = require('fs');
+const app = express();
+const Server = http.createServer(app);
 const port = process.env.PORT || 3000;
+const data = require('./Storage/router')
 
-app.get('/',(req, res) =>{
-  dataPath = __dirname + path.join("../../public/data.json");
-  fs.readFile(dataPath, 'utf8', function (err, data) {
-    if (err) throw err;
-    obj = JSON.parse(data);
-    res.send(obj)
-  });
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+//location of static files (html, css, js, etc)
+app.use(express.static(path.join(__dirname, '../public')));
+app.use('/api', data);
 
-});
 
-app.listen(port, ()=>{
+Server.listen(port, ()=>{
   console.log('Listening on port 3000...');
 });
 
-// const server = http.createServer((req, res) => {
-//   if(req.url === '/'){
-//     res.write('Hello');
-//     res.end();
-//   }else if (req.url === '/api/data')  {
-//     res.write(JSON.stringify([1,2,3]));
-//     res.end();
-//   }
-// });//event emitter
+/*
+1. crear el servidor
+2.crear las rutas
+3.capturar desde el front end la informacion en estas rutas usando ajax
+4.concatenar con el html
+*/
