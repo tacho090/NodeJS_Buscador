@@ -34,6 +34,7 @@ function setSearch() {
 }
 
 $('#buscar').on('click', ()=>{
+  $('#datos').empty();
   $.ajax({
     url:'/api/data',
     type: 'GET',
