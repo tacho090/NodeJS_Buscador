@@ -1,16 +1,24 @@
 const HtmlNode = document.getElementById('datos');
 var list_ciudades = [];
 var list_tipos = [];
+var precioInicial = 0;
+var precioFinal = 0;
 
 //Inicializador del elemento Slider
 $("#rangoPrecio").ionRangeSlider({
+  onFinish: function (data) {
+    precioInicial = data.from;
+    precioFinal = data.to;
+    console.log('precioInicial', precioInicial);
+    console.log('precioFinal', precioFinal);
+  },
   type: "double",
   grid: false,
   min: 0,
   max: 100000,
   from: 1000,
   to: 20000,
-  prefix: "$"
+  prefix: "$",
 })
 
 function setSearch() {
@@ -79,72 +87,87 @@ function removeDups(names) {
   return Object.keys(unique);
 }
 
-// $('#ciudad, #tipo').change(function() {
-//     $('#datos').empty();
-//     $('#ciudad option:selected').each(()=>{
-//       $('#tipo option:selected').each(()=>{
-//
-//       $.ajax({
-//         url:'/api/data',
-//         type: 'GET',
-//         data:{},
-//         success: function(data){
-//           $.each(data, (i, val)=>{
-//             if(data[i].Ciudad === $("#ciudad :selected").text()){
-//               if(data[i].Tipo === $("#tipo :selected").text()){
-//               HtmlNode.innerHTML = HtmlNode.innerHTML +
-//               "<div class='card horizontal'>" +
-//                 "<div class='card-image'>" +
-//                   "<img src='img/home.jpg'>" +
-//                 "</div>" +
-//                 "<div class='card-stacked'>" +
-//                   "<div class='card-content'>" +
-//                     "<div>" +
-//                       "<b>Direccion:</b>" + "<p>"+data[i].Direccion+"</p>" +
-//                     "<div>" +
-//                     "<div>" +
-//                       "<b>Ciudad:</b>" + "<p>"+data[i].Ciudad+"</p>" +
-//                     "<div>" +
-//                     "<div>" +
-//                       "<b>Telefono:</b>" + "<p>"+data[i].Telefono+"</p>" +
-//                     "<div>" +
-//                     "<div>" +
-//                       "<b>Codigo Postal:</b>" + "<p>"+data[i].Codigo_Postal+"</p>" +
-//                     "<div>" +
-//                     "<div>" +
-//                       "<b>Precio:</b>" + "<p>"+data[i].Precio+"</p>" +
-//                     "<div>" +
-//                     "<div>" +
-//                       "<b>Tipo:</b>" + "<p>"+data[i].Tipo+"</p>" +
-//                     "<div>" +
-//                   "</div>" +
-//                 "</div>" +
-//               "</div>"
-//             }
-//           }
-//         })},
-//         error: function(err) {
-//           console.log(err);
-//         }
-//       });
-//     }
-//   );
-// });
-// });
-
-$('.irs-from').change(()=>{console.log('change!')});
-
-
-$('.irs-from, .irs-to').change(function(){
-  console.log("change detected");
+$('#ciudad, #tipo').change(function() {
     $('#datos').empty();
+    $('#ciudad option:selected').each(()=>{
+      $('#tipo option:selected').each(()=>{
+
+      $.ajax({
+        url:'/api/data',
+        type: 'GET',
+        data:{},
+        success: function(data){
+          $.each(data, (i, val)=>{
+            if(data[i].Ciudad === $("#ciudad :selected").text()){
+              if(data[i].Tipo === $("#tipo :selected").text()){
+              HtmlNode.innerHTML = HtmlNode.innerHTML +
+              "<div class='card horizontal'>" +
+                "<div class='card-image'>" +
+                  "<img src='img/home.jpg'>" +
+                "</div>" +
+                "<div class='card-stacked'>" +
+                  "<div class='card-content'>" +
+                    "<div>" +
+                      "<b>Direccion:</b>" + "<p>"+data[i].Direccion+"</p>" +
+                    "<div>" +
+                    "<div>" +
+                      "<b>Ciudad:</b>" + "<p>"+data[i].Ciudad+"</p>" +
+                    "<div>" +
+                    "<div>" +
+                      "<b>Telefono:</b>" + "<p>"+data[i].Telefono+"</p>" +
+                    "<div>" +
+                    "<div>" +
+                      "<b>Codigo Postal:</b>" + "<p>"+data[i].Codigo_Postal+"</p>" +
+                    "<div>" +
+                    "<div>" +
+                      "<b>Precio:</b>" + "<p>"+data[i].Precio+"</p>" +
+                    "<div>" +
+                    "<div>" +
+                      "<b>Tipo:</b>" + "<p>"+data[i].Tipo+"</p>" +
+                    "<div>" +
+                  "</div>" +
+                "</div>" +
+              "</div>"
+            }
+          }
+        })},
+        error: function(err) {
+          console.log(err);
+        }
+      });
+    }
+  );
+});
+});
+
+function printJson(){
+  $.ajax({
+    url:'/api/data',
+    type: 'GET',
+    data:{},
+    success: function(data){
+      console.log(data)
+    }
+  });
+}
+
+$("#rangoPrecio").change(function(){
+    $('#datos').empty();
+    printJson();
     $.ajax({
       url:'/api/data',
       type: 'GET',
       data:{},
       success: function(data){
         $.each(data, (i, val)=>{
-          if(dato[i].precio >= precioInicial && dato[i].precio <= precioFinal){
+          let str = data[i].Precio;
+          let new_str = str.replace('$','');
+          let new_str01 = new_str.replace(',','');
+          console.log('string', new_str01);
+          let num = parseInt(new_str01)
+          console.log('number', num);
+          // console.log(data[i].precio);
+          if(num >= precioInicial && num <= precioFinal){
             HtmlNode.innerHTML = HtmlNode.innerHTML +
             "<div class='card horizontal'>" +
               "<div class='card-image'>" +
@@ -165,7 +188,7 @@ $('.irs-from, .irs-to').change(function(){
                     "<b>Codigo Postal:</b>" + "<p>"+data[i].Codigo_Postal+"</p>" +
                   "<div>" +
                   "<div>" +
-                    "<b>Precio:</b>" + "<p>"+data[i].Precio+"</p>" +
+                    "<b>Precio:</b>" + "<p>$"+num+"</p>" +
                   "<div>" +
                   "<div>" +
                     "<b>Tipo:</b>" + "<p>"+data[i].Tipo+"</p>" +
@@ -223,11 +246,6 @@ $(document).ready(function(){
       console.log(err);
     }
   })
-
-  var precioInicial = $('.irs-from');
-  var precioFinal = $('.irs-to');
-  console.log(precioInicial);
-  console.log(precioFinal);
 });
 
 setSearch();
