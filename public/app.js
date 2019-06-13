@@ -34,6 +34,8 @@ function setSearch() {
 }
 
 $('#buscar').on('click', ()=>{
+  $('#ciudad').get(0).selectedIndex = 0;
+  $('#tipo').get(0).selectedIndex = 0;
   $('#datos').empty();
   $.ajax({
     url:'/api/data',
